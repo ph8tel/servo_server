@@ -106,25 +106,46 @@ class ServoController:
 
         self.esc_forward_back = 1500
         self.esc_left_right = 1500
-        self.esc_jet = 2200
+        self.esc_jet = 0
 
         self.lights = 0
         self.horn = 0
 
         # ------------------------------------------------------------
-        #  ESC FILTERS ADDED
+        #  ESC FILTERS 
         # ------------------------------------------------------------
         self.fb_filter = EscFilter(accel_rate=300, decel_rate=900)
         self.lr_filter = EscFilter(accel_rate=300, decel_rate=900)
+        
+        self.jet_filter = EscFilter(accel_rate=400, decel_rate=600)
 
         self.reset_all()
         self.spin_up_jet()
+    
+    def update_jet(self, target_pwm):
+        smooth = self.jet_filter.update(target_pwm)
+        self.esc_jet = smooth
+        self.set_esc(self.ESC_JET, smooth)
+        return smooth
 
     def spin_up_jet(self):
-        time.sleep(1)
-        self.set_esc(self.ESC_JET, 1500)
-        time.sleep(2)
-        self.set_esc(self.ESC_JET, 2500)
+        # Send zero-throttle to arm the ESC
+        self.set_esc(self.ESC_JET, 1000)
+        time.sleep(1.0) 
+
+        #init filtered as zero-throttle
+        self.jet_filter.filtered = 1000 
+        self.esc_jet = 1500
+    
+    def jet_75(self): 
+        return self.update_jet(1750) 
+    
+    def jet_100(self): 
+        return self.update_jet(2000)
+    
+    def jet_off(self):
+        return self.update_jet(1000)
+
 
     def angle_to_pulse(self, angle, min_pulse=500, max_pulse=2500):
         pulse = min_pulse + (angle / 270.0) * (max_pulse - min_pulse)
@@ -252,6 +273,15 @@ async def process_message(msg):
         if buttons.get('horn'):
             print("horn pressed")
             servo_controller.trigger_horn()
+        
+        if buttons.get('fan75'): 
+            servo_controller.jet_75() 
+
+        if buttons.get('fan100'): 
+            servo_controller.jet_100() 
+        
+        if buttons.get('fanOff'): 
+            servo_controller.jet_off()
 
         print(f"[CTRL] Joy L:({left_joy.get('x', 0):.2f},{left_joy.get('y', 0):.2f}) "
               f"Blower P:{blower_pan:.1f}° T:{blower_tilt:.1f}° | "
