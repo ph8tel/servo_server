@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,35 +14,42 @@
             background: #1a1a1a;
             color: #fff;
         }
+
         .container {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
+
         .section {
             background: #2a2a2a;
             padding: 20px;
             border-radius: 8px;
             border: 2px solid #444;
         }
+
         h2 {
             margin-top: 0;
             color: #4CAF50;
         }
+
         .status {
             padding: 10px;
             margin-bottom: 15px;
             border-radius: 5px;
             font-weight: bold;
         }
+
         .status.connected {
             background: #4CAF50;
             color: white;
         }
+
         .status.disconnected {
             background: #f44336;
             color: white;
         }
+
         button {
             background: #4CAF50;
             color: white;
@@ -52,30 +60,38 @@
             border-radius: 5px;
             font-size: 16px;
         }
+
         button:hover {
             background: #45a049;
         }
+
         button:active {
             background: #3d8b40;
         }
+
         button.danger {
             background: #f44336;
         }
+
         button.danger:hover {
             background: #da190b;
         }
+
         .slider-control {
             margin: 15px 0;
         }
+
         .slider-control label {
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
         }
+
         input[type="range"] {
             width: 100%;
             height: 30px;
         }
+
         .value-display {
             display: inline-block;
             min-width: 60px;
@@ -84,6 +100,7 @@
             border-radius: 3px;
             margin-left: 10px;
         }
+
         .gamepad-status {
             margin-top: 10px;
             padding: 10px;
@@ -92,6 +109,7 @@
             font-family: monospace;
             font-size: 12px;
         }
+
         .log {
             background: #000;
             padding: 10px;
@@ -101,19 +119,30 @@
             font-family: monospace;
             font-size: 12px;
         }
+
         .log-entry {
             margin: 2px 0;
         }
-        .log-entry.info { color: #4CAF50; }
-        .log-entry.error { color: #f44336; }
-        .log-entry.warn { color: #ff9800; }
+
+        .log-entry.info {
+            color: #4CAF50;
+        }
+
+        .log-entry.error {
+            color: #f44336;
+        }
+
+        .log-entry.warn {
+            color: #ff9800;
+        }
     </style>
 </head>
+
 <body>
     <h1>🎮 Servo & ESC Test Controller</h1>
-    
+
     <div class="status" id="connectionStatus">Disconnected</div>
-    
+
     <div style="margin-bottom: 20px;">
         <button onclick="connect()">Connect to Server</button>
         <button onclick="disconnect()" class="danger">Disconnect</button>
@@ -126,13 +155,13 @@
             <h2>📹 Camera Gimbal</h2>
             <div class="slider-control">
                 <label>Pan (Yaw): <span class="value-display" id="panValue">135°</span></label>
-                <input type="range" id="panSlider" min="0" max="270" value="135" 
-                       oninput="updateServo('pan', this.value)">
+                <input type="range" id="panSlider" min="0" max="270" value="135"
+                    oninput="updateServo('pan', this.value)">
             </div>
             <div class="slider-control">
                 <label>Tilt (Pitch): <span class="value-display" id="tiltValue">135°</span></label>
-                <input type="range" id="tiltSlider" min="0" max="270" value="135" 
-                       oninput="updateServo('tilt', this.value)">
+                <input type="range" id="tiltSlider" min="0" max="270" value="135"
+                    oninput="updateServo('tilt', this.value)">
             </div>
             <button onclick="centerCamera()">Center Camera</button>
         </div>
@@ -142,13 +171,13 @@
             <h2>🚗 Tracked Chassis ESCs</h2>
             <div class="slider-control">
                 <label>Forward/Back: <span class="value-display" id="escFBValue">1500µs</span></label>
-                <input type="range" id="escFBSlider" min="1000" max="2000" value="1500" 
-                       oninput="updateESC('fb', this.value)">
+                <input type="range" id="escFBSlider" min="1000" max="2000" value="1500"
+                    oninput="updateESC('fb', this.value)">
             </div>
             <div class="slider-control">
                 <label>Left/Right: <span class="value-display" id="escLRValue">1500µs</span></label>
-                <input type="range" id="escLRSlider" min="1000" max="2000" value="1500" 
-                       oninput="updateESC('lr', this.value)">
+                <input type="range" id="escLRSlider" min="1000" max="2000" value="1500"
+                    oninput="updateESC('lr', this.value)">
             </div>
             <button onclick="neutralESCs()">Neutral ESCs</button>
             <div style="margin-top: 10px;">
@@ -157,6 +186,15 @@
                 <button onclick="testLeft()">Test Left</button>
                 <button onclick="testRight()">Test Right</button>
             </div>
+
+            <!-- Jet Fan Test Controls -->
+            <div class="control-section">
+                <h3>Jet Fan</h3>
+                <button onclick="sendJet75()">75% Power</button>
+                <button onclick="sendJet100()">100% Power</button>
+                <button onclick="sendJetOff()">Off</button>
+            </div>
+
         </div>
 
         <!-- Blower Pan/Tilt Controls -->
@@ -166,12 +204,12 @@
             <div class="slider-control">
                 <label>Left Joy X (Pan): <span class="value-display" id="blowerJoyXValue">0.00</span></label>
                 <input type="range" id="blowerJoyXSlider" min="-100" max="100" value="0" step="1"
-                       oninput="updateBlowerJoystick()" onchange="releaseBlowerJoystick()">
+                    oninput="updateBlowerJoystick()" onchange="releaseBlowerJoystick()">
             </div>
             <div class="slider-control">
                 <label>Left Joy Y (Tilt): <span class="value-display" id="blowerJoyYValue">0.00</span></label>
                 <input type="range" id="blowerJoyYSlider" min="-100" max="100" value="0" step="1"
-                       oninput="updateBlowerJoystick()" onchange="releaseBlowerJoystick()">
+                    oninput="updateBlowerJoystick()" onchange="releaseBlowerJoystick()">
             </div>
             <div style="margin-top: 10px;">
                 <button onclick="blowerTest('left')">⬅ Pan Left</button>
@@ -187,8 +225,7 @@
             <h2>💡 Accessories</h2>
             <div class="slider-control">
                 <label>Lights: <span class="value-display" id="lightsValue">0</span></label>
-                <input type="range" id="lightsSlider" min="0" max="255" value="0" 
-                       oninput="updateLights(this.value)">
+                <input type="range" id="lightsSlider" min="0" max="255" value="0" oninput="updateLights(this.value)">
             </div>
             <button onclick="toggleLights()">Toggle Lights</button>
             <button onclick="hornBeep()">🔊 Horn</button>
@@ -202,7 +239,8 @@
             No gamepad detected. Connect an Xbox controller and press any button.
         </div>
         <div>
-            <label><input type="checkbox" id="enableGamepad" onchange="toggleGamepad(this.checked)"> Enable Gamepad Control</label>
+            <label><input type="checkbox" id="enableGamepad" onchange="toggleGamepad(this.checked)"> Enable Gamepad
+                Control</label>
         </div>
         <p style="color: #888; font-size: 14px;">
             Left Stick: Blower Pan/Tilt (rate-based)<br>
@@ -235,27 +273,27 @@
         function connect() {
             const host = window.location.hostname || 'localhost';
             const url = `ws://${host}:8080`;
-            
+
             log(`Connecting to ${url}...`, 'info');
             ws = new WebSocket(url);
-            
+
             ws.onopen = () => {
                 log(`Connected to ${url}`, 'info');
                 document.getElementById('connectionStatus').textContent = 'Connected';
                 document.getElementById('connectionStatus').className = 'status connected';
             };
-            
+
             ws.onclose = () => {
                 log('WebSocket connection closed', 'warn');
                 document.getElementById('connectionStatus').textContent = 'Disconnected';
                 document.getElementById('connectionStatus').className = 'status disconnected';
                 ws = null;
             };
-            
+
             ws.onerror = (err) => {
                 log('WebSocket error', 'error');
             };
-            
+
             ws.onmessage = (event) => {
                 try {
                     const response = JSON.parse(event.data);
@@ -290,24 +328,24 @@
         function updateServo(type, value) {
             const angle = parseInt(value);
             document.getElementById(`${type}Value`).textContent = `${angle}°`;
-            
+
             // Convert angle (0-270) to quaternion component (-1 to 1)
             const quatValue = (angle / 135.0) - 1.0;
-            
+
             if (type === 'pan') {
                 // Pan maps to quaternion Y
                 const tilt = parseInt(document.getElementById('tiltSlider').value);
                 const tiltQuat = (tilt / 135.0) - 1.0;
-                sendCommand({ 
-                    type: 'pose', 
+                sendCommand({
+                    type: 'pose',
                     orientation: { x: tiltQuat, y: quatValue, z: 0, w: 1.0 }
                 });
             } else if (type === 'tilt') {
                 // Tilt maps to quaternion X
                 const pan = parseInt(document.getElementById('panSlider').value);
                 const panQuat = (pan / 135.0) - 1.0;
-                sendCommand({ 
-                    type: 'pose', 
+                sendCommand({
+                    type: 'pose',
                     orientation: { x: quatValue, y: panQuat, z: 0, w: 1.0 }
                 });
             }
@@ -324,16 +362,16 @@
         function updateESC(type, value) {
             const pulse = parseInt(value);
             document.getElementById(`esc${type.toUpperCase()}Value`).textContent = `${pulse}µs`;
-            
+
             // Convert pulse (1000-2000) to joystick value (-1 to 1)
             const joyValue = (pulse - 1500) / 500.0;
-            
+
             const fbPulse = parseInt(document.getElementById('escFBSlider').value);
             const lrPulse = parseInt(document.getElementById('escLRSlider').value);
             const joyX = (lrPulse - 1500) / 500.0;
             const joyY = (fbPulse - 1500) / 500.0;
-            
-            sendCommand({ 
+
+            sendCommand({
                 type: 'controller',
                 rightJoystick: { x: joyX, y: joyY },
                 leftJoystick: { x: 0, y: 0 },
@@ -371,6 +409,29 @@
             updateESC('lr', 1700);
             setTimeout(neutralESCs, 1000);
         }
+
+
+        function sendJet75() {
+            sendCommand({
+                type: "controller",
+                buttons: { fan75: true }
+            });
+        }
+
+        function sendJet100() {
+            sendCommand({
+                type: "controller",
+                buttons: { fan100: true }
+            });
+        }
+
+        function sendJetOff() {
+            sendCommand({
+                type: "controller",
+                buttons: { fanOff: true }
+            });
+        }
+
 
         // Blower pan/tilt - rate-based via left joystick
         let blowerInterval = null;
@@ -468,7 +529,7 @@
             const brightness = lightsOn ? 255 : 0;
             document.getElementById('lightsSlider').value = brightness;
             document.getElementById('lightsValue').textContent = brightness;
-            sendCommand({ 
+            sendCommand({
                 type: 'controller',
                 rightJoystick: { x: 0, y: 0 },
                 buttons: { lights: true }
@@ -476,7 +537,7 @@
         }
 
         function hornBeep() {
-            sendCommand({ 
+            sendCommand({
                 type: 'controller',
                 rightJoystick: { x: 0, y: 0 },
                 buttons: { horn: true }
@@ -510,9 +571,9 @@
         function pollGamepad() {
             const gamepads = navigator.getGamepads();
             const gamepad = gamepads[0]; // First connected gamepad
-            
+
             if (!gamepad) {
-                document.getElementById('gamepadStatus').textContent = 
+                document.getElementById('gamepadStatus').textContent =
                     'No gamepad detected. Connect an Xbox controller and press any button.';
                 return;
             }
@@ -522,7 +583,7 @@
             const leftY = gamepad.axes[1].toFixed(2);
             const rightX = gamepad.axes[2].toFixed(2);
             const rightY = gamepad.axes[3].toFixed(2);
-            
+
             document.getElementById('gamepadStatus').innerHTML = `
                 <strong>${gamepad.id}</strong><br>
                 Left Stick: X=${leftX}, Y=${leftY}<br>
@@ -535,7 +596,7 @@
             // Left stick controls blower pan/tilt (rate-based)
             const leftJoyX = gamepad.axes[0];
             const leftJoyY = gamepad.axes[1];
-            
+
             // Right stick controls ESCs (forward-back/left-right)
             const rightJoyX = gamepad.axes[2];
             const rightJoyY = -gamepad.axes[3]; // Invert Y
@@ -572,7 +633,7 @@
             // Button mappings (Xbox controller)
             // 0: A button - Horn
             // 1: B button - Lights toggle
-            
+
             if (gamepad.buttons[0] && gamepad.buttons[0].pressed) {
                 hornBeep();
             }
@@ -603,4 +664,5 @@
         });
     </script>
 </body>
+
 </html>
